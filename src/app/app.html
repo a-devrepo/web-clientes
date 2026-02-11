@@ -1,58 +1,96 @@
-<div class="card card-body m-4 p-4 shadow">
+<div class="message-container">
+  <div *ngIf="mensagemErro()" class="alert alert-danger alert-dismissible fade show shadow" role="alert">
+    <strong>{{ mensagemErro() }}</strong>
+    <button type="button" class="btn-close" (click)="mensagemErro.set('')"></button>
+  </div>
 
-  <h3>Cadastro de clientes</h3>
-  <p>Preencha os campos do formulário.</p>
+  <div *ngIf="mensagemSucesso()" class="alert alert-success alert-dismissible fade show shadow" role="alert">
+    <strong>{{ mensagemSucesso() }}</strong>
+    <button type="button" class="btn-close" (click)="mensagemSucesso.set('')"></button>
+  </div>
+</div>
 
-  <div
-      *ngIf="mensagemErro()"
-      class="alert alert-danger alert-dismissible fade show"
-      role="alert"
-      data-bs-theme="light"
-    >
-      <strong>{{ mensagemErro() }}</strong>
-      <button
-        type="button"
-        class="btn-close"
-        aria-label="Fechar"
-        (click)="mensagemErro.set('')"
-      ></button>
+<div class="row m-4">
+  <div class="col-md-3">
+    <div class="card card-body m-1 p-3 shadow">
+      <h3>Cadastro de clientes</h3>
+      <p class="text-muted">Preencha os campos do formulário.</p>
+
+      <form [formGroup]="formCadastro" (ngSubmit)="cadastrar()">
+        <div class="mb-3">
+          <label class="form-label">Informe o nome:</label>
+          <input type="text" class="form-control" formControlName="nome" placeholder="Nome do cliente"/>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Informe o email:</label>
+          <input type="email" class="form-control" formControlName="email" placeholder="Email do cliente"/>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Informe o telefone:</label>
+          <input type="text" class="form-control" formControlName="telefone" placeholder="Telefone do cliente"/>
+        </div>
+        <div class="d-grid">
+          <input type="submit" class="btn btn-primary shadow" value="Realizar cadastro" [disabled]="formCadastro.invalid"/>
+        </div>
+      </form>
     </div>
-    <div
-      *ngIf="mensagemSucesso()"
-      class="alert alert-success alert-dismissible fade show"
-      role="alert"
-      data-bs-theme="light"
-    >
-      <strong>{{ mensagemSucesso() }}</strong>
-      <button
-        type="button"
-        class="btn-close"
-        aria-label="Fechar"
-        (click)="mensagemSucesso.set('')"
-      ></button>
+  </div>
+
+  <div class="col-md-9">
+    <div class="card card-body m-1 p-3 shadow">
+      <h3>Consulta de clientes</h3>
+      <p class="text-muted">Pesquise os clientes cadastrados</p>
+
+      <form [formGroup]="formConsulta" (ngSubmit)="consultar()">
+        <div class="row g-2">
+          <div class="col-md-8">
+            <input type="text" class="form-control" formControlName="nome" placeholder="Digite o nome do cliente"/>
+          </div>
+          <div class="col-md-4">
+            <input type="submit" class="btn btn-primary shadow w-100" value="Pesquisar"/>
+          </div>
+        </div>
+      </form>
+
+      <div class="mt-4">
+        <div class="mt-4 table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th class="ps-3">Nome do Cliente</th>
+                <th>E-mail</th>
+                <th>Telefone</th>
+                <th>Data Cadastro</th>
+                <th class="text-center">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of listaClientes(); track item.id) {
+                <tr>
+                  <td class="ps-3 fw-semibold">{{ item.nome }}</td>
+                  <td>{{ item.email }}</td>
+                  <td>{{ item.telefone }}</td>
+                  <td>{{ item.datacadastro | date: 'dd/MM/yyyy'}}</td>
+                  <td class="text-center">
+                    <button class="btn btn-sm btn-outline-primary me-2" title="Editar">
+                      <i class="bi bi-pencil"></i> Editar
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" title="Excluir">
+                      <i class="bi bi-trash"></i> Excluir
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="4" class="text-center py-4 text-muted">
+                    Nenhum cliente encontrado para a pesquisa.
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
-
-  <form [formGroup]="formulario" (ngSubmit)="cadastrar()">
-
-    <div class="mb-3">
-      <label>Informe o nome:</label>
-      <input type="text" class="form-control" formControlName="nome" placeholder="Digite o nome do cliente"/>
-    </div>
-
-    <div class="mb-3">
-      <label>Informe o email:</label>
-      <input type="text" class="form-control" formControlName="email" placeholder="Digite o email do cliente"/>
-    </div>
-
-    <div class="mb-3">
-      <label>Informe o telefone:</label>
-      <input type="text" class="form-control" formControlName="telefone" placeholder="Digite o telefone do cliente"/>
-    </div>
-
-    <div class="mb-3">
-      <input type="submit" class="btn btn-primary shadow" value="Realizar cadastro" [disabled]="formulario.invalid"/>
-    </div>
-
-  </form>
-
+  </div>
 </div>

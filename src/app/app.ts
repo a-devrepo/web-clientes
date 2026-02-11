@@ -8,7 +8,6 @@ import {
   FormsModule,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -17,33 +16,60 @@ import { RouterOutlet } from '@angular/router';
   styleUrl: './app.css',
 })
 export class App {
+
   private httpClient = inject(HttpClient);
 
   mensagemErro = signal<string>('');
   mensagemSucesso = signal<string>('');
+  listaClientes = signal<any[]>([]);
 
-  formulario = new FormGroup({
+  apiUrl = 'http://localhost:8081/api/v1/clientes';
+
+  formCadastro = new FormGroup({
     nome: new FormControl('', [Validators.required, Validators.minLength(6)]),
     email: new FormControl('', [Validators.required, Validators.email]),
     telefone: new FormControl('', [Validators.required, Validators.minLength(11),
     ]),
   });
 
+  formConsulta = new FormGroup({
+  nome: new FormControl('', [Validators.required, Validators.minLength(6)])
+});
+
   cadastrar() {
-    
-    if (this.formulario.invalid) {
+
+    if (this.formCadastro.invalid) {
       return;
     }
 
-    const novoCliente = this.formulario.getRawValue();
+    const novoCliente = this.formCadastro.getRawValue();
 
     this.httpClient
-      .post('http://localhost:8081/api/v1/clientes', novoCliente, {responseType: 'text'})
+      .post(this.apiUrl, novoCliente, {responseType: 'text'})
       .subscribe(
         {
         next: (data: any) => {
           this.mensagemSucesso.set(data);
-          this.formulario.reset();
+          this.formCadastro.reset();
+        },
+        error: (err:any) => {
+          console.log(err);
+          this.mensagemErro.set(err.error);
+        },
+      });
+  }
+
+  consultar() {
+
+    const nome = this.formConsulta.controls.nome.value;
+
+    this.httpClient
+      .get(`${this.apiUrl}/${nome}`)
+      .subscribe(
+        {
+        next: (data) => {
+          this.listaClientes.set(data as any);
+          this.formConsulta.reset();
         },
         error: (err:any) => {
           console.log(err);
