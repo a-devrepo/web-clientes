@@ -72,10 +72,16 @@
                   <td>{{ item.telefone }}</td>
                   <td>{{ item.datacadastro | date: 'dd/MM/yyyy'}}</td>
                   <td class="text-center">
-                    <button class="btn btn-sm btn-outline-primary me-2" title="Editar">
+                    <button class="btn btn-sm btn-outline-primary me-2" title="Editar"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalEdicao"
+                    (click)="prepararEdicao(item)">
                       <i class="bi bi-pencil"></i> Editar
                     </button>
-                    <button class="btn btn-sm btn-outline-danger" title="Excluir">
+                    <button class="btn btn-sm btn-outline-danger" title="Excluir"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalExclusao"
+                    (click)="clienteSelecionadoParaExclusao.set(item)">
                       <i class="bi bi-trash"></i> Excluir
                     </button>
                   </td>
@@ -91,6 +97,70 @@
           </table>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalExclusao" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="modalLabel">Confirmar Exclusão</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        @if (clienteSelecionadoParaExclusao()) {
+          <p>Deseja realmente excluir o cliente <strong>{{ clienteSelecionadoParaExclusao()?.nome }}</strong>?</p>
+          <p class="text-muted small">Esta ação não poderá ser desfeita.</p>
+        }
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button
+          type="button"
+          class="btn btn-danger"
+          data-bs-dismiss="modal"
+          (click)="excluir()">
+          Confirmar Exclusão
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalEdicao" tabindex="-1" aria-labelledby="edicaoLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-primary shadow">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="edicaoLabel">Atualizar Cliente</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form [formGroup]="formEdicao" (ngSubmit)="atualizar()">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Nome:</label>
+            <input type="text" class="form-control" formControlName="nome" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email:</label>
+            <input type="email" class="form-control" formControlName="email" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Telefone:</label>
+            <input type="text" class="form-control" formControlName="telefone" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            data-bs-dismiss="modal"
+            [disabled]="formEdicao.invalid">
+            Salvar Alterações
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
